@@ -2,7 +2,7 @@
 
 <img src="./assets/ChatGPT Image Apr 26, 2026, 11_57_26 PM_copy.png" width="500em" ></img> 
 
-<img src="./assets/frame.png" width="500em" ></img> 
+
 
 **🤖 面向生成式推荐规模化的开源框架: 本项目基于 Tiktok、Instagram、快手等 OneRec 的生成式内容推荐范式，将推荐统一建模为序列生成与偏好对齐，通过 Semantic-ID 实现多模态内容与用户行为的统一表示，结合 RL 驱动的 Reward 机制进行E2E优化**。**OMNI-Rec 是首个基于完全开源的OneRec**生成式推荐**框架，提供覆盖 **语义 ID（SID）构建**、**监督微调（SFT）** 以及面向推荐的**强化学习（RL）** 的端到端完整工作流。
 
@@ -12,6 +12,8 @@
 ![Short Video Rec](https://img.shields.io/badge/Application-ShortVideoRec-red)
 ![Transformers](https://img.shields.io/badge/Transformers-HuggingFace-yellow.svg)
 
+
+<img src="./assets/frame.png" width="1000em" ></img> 
 
 <a href="https://arxiv.org/abs/2510.24431">📄 技术报告</a> | <a href="https://huggingface.co/kkknight/MiniOneRec">🤗 Huggingface</a> | <a href="https://modelscope.cn/models/k925238839/MiniOneRec">🤖 Modelscope</a>
 
