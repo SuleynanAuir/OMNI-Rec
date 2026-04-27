@@ -10,7 +10,7 @@
 ![License](https://img.shields.io/badge/License-Apache--2.0-green.svg)
 
 
-<a href="https://arxiv.org/abs/2510.24431">📄 技术报告</a> | <a href="https://huggingface.co/kkknight/MiniOneRec">🤗 Huggingface</a> | <a href="https://modelscope.cn/models/k925238839/MiniOneRec">🤖 Modelscope</a>
+<a href="https://arxiv.org/abs/2510.24431">📄 Report</a> | <a href="https://huggingface.co/kkknight/MiniOneRec">🤗 Huggingface</a> | <a href="https://modelscope.cn/models/k925238839/MiniOneRec">🤖 Modelscope</a>
 
 </div>
 
