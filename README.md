@@ -28,8 +28,8 @@
 | 阶段 | 全称 | 核心目标 | 学习内容 | 输入 | 输出 | 是否训练 |
 | -------- | ---------------------- | ------ | ----------------------- | -------------- | -------- | ---- |
 | SFT | Supervised Fine-Tuning | 拟合用户行为 | P(item｜user, history) | 数据集（用户序列） | 初始化推荐模型（Root Model）🌟 | ✅ |
-| RL | Reinforcement Learning | 优化长期收益 | Policy π(a｜s) | SFT模型 + reward | 优化后的策略模型 （RL-Enhanced Model）🌟 | ✅ |
-| Evaluate | Evaluation | 模型评估 | 无（推理） | 训练好的模型 | 指标 + 图表 | ❌ |
+| RL | - | 优化长期收益 | Policy π(a｜s) | SFT模型 + reward | 优化后的策略模型 （RL-Enhanced Model）🌟 | ✅ |
+| Evaluate | - | 模型评估 | 无（推理） | 训练好的模型 | 指标 + 图表 | ❌ |
 
 - SFT：基础推荐 root model 仅模拟模仿历史数据（behavior cloning），不会考虑RL中的长期收益
 - RL: 学习“推荐策略（policy）”，最大化长期收益:
@@ -37,7 +37,126 @@
 	- 得到一个“更聪明”的推荐策略模型 （RL-Enhanced Model）
 - Eval: 评估行为阶段
 
+---
 
+🔥 SFT → RL 衔接机制（KL 约束 + PPO）
+
+在生成式推荐系统（如 MiniOneRec / OneRec）中，  
+SFT → RL 的衔接核心在两条主线：
+
+- KL 散度约束（Stability）
+- PPO（Policy Optimization）
+
+---
+
+🧠 1. 核心思想
+
+SFT（监督学习）$\pi_{\text{SFT}}(a \mid s) \approx \text{User Behavior}$
+
+👉 本质：根据用户历史（history + user）预测下一步行为（推荐序列）
+
+---
+
+Rec-RL（强化学习）$\max \mathbb{E}_{\pi_\theta}[R]$
+
+👉 本质：不只是“用户会点什么”，而是“推荐什么更好”
+
+---
+
+⚠️ 2. 为什么需要 KL 约束？
+
+如果只优化 Reward：
+
+- 模型可能偏离真实用户分布  
+- 出现极端推荐（标题党）  
+- 出现 hallucination  
+
+👉 解决方案：在 RL 中加入 KL 散度约束，让模型不要偏离 SFT 太远
+
+---
+
+🔥 3. RL + KL 统一目标
+
+$\mathcal{L}_{\text{RL}} = - \mathbb{E}_{\pi_\theta}[R] + \beta \cdot \mathrm{KL}(\pi_\theta \parallel \pi_{\text{ref}})$
+
+变量说明：
+
+- \(R(s,a)\)：Reward（点击 / 停留等）
+- \(\pi_{\text{ref}}\)：参考模型（SFT）
+- KL：分布偏移惩罚
+- \(\beta\)：惩罚系数（越大越保守）
+
+👉 直觉：让 reward 高，同时不要偏离 SFT
+
+---
+
+🧠 4. Token-Level KL（关键）
+
+$\mathrm{KL}_t =\log \pi_\theta(a_t \mid s_t)-\log \pi_{\text{ref}}(a_t \mid s_t)$
+
+融入 reward：$R'_t = R_t - \beta \cdot \mathrm{KL}_t$
+
+👉 本质：把 KL 当成负奖励（penalty）
+
+---
+
+🚀 5. PPO（策略优化）
+
+$\mathcal{L}_{\text{PPO}} = -\mathbb{E} \Big[\min(r_t A_t,\ \text{clip}(r_t, 1-\epsilon, 1+\epsilon) A_t)\Big]$
+
+说明：
+
+- \(r_t = \frac{\pi_\theta}{\pi_{\text{old}}}\)
+- \(A_t\)：优势函数（基于 \(R'_t\)）
+- \(\epsilon\)：控制更新幅度
+
+👉 作用：防止策略更新过大，保证稳定训练
+
+---
+
+🔗 6. SFT → RL 完整流程
+
+(1) 训练 SFT：得到初始化策略 π_ref  
+        ↓  
+(2) 初始化 π_θ ← π_ref  
+        ↓  
+(3) 用当前 π_θ 生成推荐序列（tokens）  
+        ↓  
+(4) 计算 reward R（点击 / 停留 / 指标）  
+        ↓  
+(5) 计算 KL：  
+        KL_t = logπθ(at|st) − logπref(at|st)  
+        ↓  
+(6) 得到修正奖励：  
+        R' = R − β·KL  
+        ↓  
+(7) 用 PPO 更新策略 π_θ  
+        ↓  
+(8) 重复  
+
+---
+
+🧠 7. 直观理解
+
+- SFT：用户“会怎么做”  
+- RL：系统“应该怎么做”  
+- KL：不要偏离用户太远  
+- PPO：稳定更新策略  
+
+---
+
+🔥 8. 一句话总结
+
+SFT learns to imitate user behavior, RL optimizes long-term reward, and KL regularization ensures the policy remains aligned with the original behavior distribution while PPO guarantees stable updates.
+
+---
+
+🚀 9. 核心认知
+
+RL 不是替代 SFT，而是在 SFT 基础上的“受约束优化（Constrained Optimization）”
+
+
+---
 
 # 第一部分：快速上手 · 环境配置与文件运行
 
