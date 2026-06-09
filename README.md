@@ -1,7 +1,10 @@
 <div align="center">
 
-<img src="./assets/ChatGPT Image Apr 26, 2026, 11_57_26 PM_copy.png" width="500em" ></img> 
+<!-- 项目封面图 -->
+<img src="./assets/ChatGPT Image Apr 26, 2026, 11_57_26 PM_copy.png" width="600em" alt="OMNI-Rec Project Cover"></img>
 
+<!-- 项目Logo -->
+<!-- <img src="./assets/logo.png" width="150em" alt="OMNI-Rec Logo" style="margin: 20px 0;"></img> -->
 
 **OMNI-Rec 基于首个开源 OneRec生成式推荐框架，SID + SFT + 面向推荐 Rec-RL 的E2E工作流 💼**
 
@@ -14,9 +17,23 @@
 
 <a href="https://arxiv.org/abs/2510.24431">📄 技术报告</a> | <a href="https://huggingface.co/kkknight/MiniOneRec">🤗 Huggingface</a> | <a href="https://modelscope.cn/models/k925238839/MiniOneRec">🤖 Modelscope</a>
 
-<img src="./assets/frame.png" width="1000em" ></img> 
+<!-- 框架图并排展示 -->
+<table>
+  <tr>
+    <td align="center">
+      <img src="./assets/minionerec_framework.png" width="450em" alt="OMNI Framework Overview"><br>
+      <b>Basic MiniOneRec Frame</b>
+    </td>
+    <td align="center">
+      <img src="./assets/frame.png" width="450em" alt="MiniOneRec Detailed Framework Architecture"><br>
+      <b>MiniOneRec Detailed Framework</b>
+    </td>
+  </tr>
+</table>
 
-
+<!-- 推荐框架图 -->
+<img src="./assets/rec_frame.png" width="800em" alt="Recommendation Framework" style="margin: 20px 0;"><br>
+<b>OMNI Framework</b>
 
 </div>
 
@@ -29,7 +46,19 @@
 
 ## 🌟 训练范式概览
 
-> 整体模型学习流程：`SFT → RL → Eval` 是递进关系，但不是“数据传递”，而是“模型能力逐步升级”。
+> 整体模型学习流程：`SFT → RL → Eval` 是递进关系，但不是"数据传递"，而是"模型能力逐步升级"。
+
+<!-- 主要结果展示 -->
+<div align="center">
+<img src="./assets/minionerec_main_result.png" width="700em" alt="OMNI Main Results"><br>
+<b>MiniOneRec 模型性能表现</b>
+</div>
+
+<!-- Scaling效果展示 -->
+<div align="center">
+<img src="./assets/scaling_big.png" width="600em" alt="Scaling Performance" style="margin: 20px 0;"><br>
+<b>模型Scaling性能分析</b>
+</div>
 
 基础编码方式进化：
 [![RQ-VAE + Balanced K-Means Operation](https://img.shields.io/badge/RQ--VAE-Documentation-blue)](./rq/README.md)
@@ -49,6 +78,13 @@
 ---
 
 ## 🔥 SFT → RL 衔接机制（KL 约束 + PPO）
+
+<!-- LLM技术展示 -->
+<div align="center">
+<img src="./assets/llmmatter_big.png" width="600em" alt="LLM Technology in Recommendation" style="margin: 20px 0;"><br>
+<b>LLM技术在推荐系统中的应用</b>
+</div>
+
 
 在生成式推荐系统（如 MiniOneRec / OneRec）中，  
 SFT → RL 的衔接核心在两条主线：
