@@ -7,11 +7,11 @@ import torch.nn.functional as F
 import os
 import logging
 import time as Time
-from utility import pad_history,calculate_hit,extract_axis_1
+from .utility import pad_history, calculate_hit, extract_axis_1
 from collections import Counter
 from tqdm import tqdm
 from torch.utils.data import Dataset, DataLoader
-from SASRecModules_ori import *
+from .sasrec_modules import *
 import random
 import json
 import copy
@@ -652,4 +652,3 @@ if __name__ == '__main__':
     torch.save(best_model.state_dict(), result_folder + f"/best_{args.data}_{args.model}_emb{args.hidden_factor}_bs{args.batch_size}_lr{args.lr}_decay{args.l2_decay}_seed{args.seed}_loss_{args.loss_type}_dropout{args.dropout_rate}_state.pth")
 
     evaluate_games(best_model, data_file_test, device, topk, save_logits=True, eval_type="test")
-

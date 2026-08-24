@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+REPO_ROOT=$(cd -- "${SCRIPT_DIR}/.." && pwd)
+cd "${REPO_ROOT}"
+export PYTHONPATH="${REPO_ROOT}${PYTHONPATH:+:${PYTHONPATH}}"
+
 # Industrial_and_Scientific
 # Office_Products
 BASE_MODEL=${BASE_MODEL:-./qwen}
@@ -66,7 +71,7 @@ do
     mkdir -p "$temp_dir"
     
     echo "Splitting test data..."
-    "$PYTHON_CMD" ./split.py --input_path "$test_file" --output_path "$temp_dir" --cuda_list "$CUDA_LIST_CSV"
+    "$PYTHON_CMD" ./scripts/split.py --input_path "$test_file" --output_path "$temp_dir" --cuda_list "$CUDA_LIST_CSV"
     
     if [[ ! -f "$temp_dir/0.csv" ]]; then
         echo "Error: Data splitting failed for category $category"
@@ -80,7 +85,7 @@ do
     do
         if [[ -f "$temp_dir/${i}.csv" ]]; then
             echo "Starting evaluation on GPU $i for category ${category}"
-            CUDA_VISIBLE_DEVICES=$i PYTHONUNBUFFERED=1 "$PYTHON_CMD" -u ./evaluate.py \
+            CUDA_VISIBLE_DEVICES=$i PYTHONUNBUFFERED=1 "$PYTHON_CMD" -u ./scripts/evaluate.py \
                 --base_model "$exp_name" \
                 --info_file "$info_file" \
                 --category "$category" \
@@ -118,7 +123,7 @@ do
     actual_cuda_list=$(ls "$temp_dir"/*.json 2>/dev/null | sed 's/.*\///g' | sed 's/\.json//g' | tr '\n' ',' | sed 's/,$//')
     echo "Merging results from GPUs: $actual_cuda_list"
     
-    "$PYTHON_CMD" ./merge.py \
+    "$PYTHON_CMD" ./scripts/merge.py \
         --input_path "$temp_dir" \
         --output_path "$output_dir/final_result_${category}.json" \
         --cuda_list "$actual_cuda_list"
@@ -129,12 +134,12 @@ do
     fi
     
     echo "Calculating metrics..."
-    "$PYTHON_CMD" ./calc.py \
+    "$PYTHON_CMD" ./scripts/calc.py \
         --path "$output_dir/final_result_${category}.json" \
         --item_path "$info_file"
 
     echo "Generating advanced analysis figures..."
-    "$PYTHON_CMD" ./visualize_metrics.py \
+    "$PYTHON_CMD" ./scripts/visualize_metrics.py \
         --path "$output_dir/final_result_${category}.json" \
         --item_path "$info_file" \
         --train_file "$train_file" \

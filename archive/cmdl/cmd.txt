@@ -7,28 +7,28 @@ conda activate MiniOneRec
 export WANDB_PROJECT=MiniOneRec
 export WANDB_MODE=offline
 set -o pipefail
-bash sft.sh | tee logs/sft_$(date +%F_%H-%M-%S).log
+bash scripts/sft.sh | tee logs/sft_$(date +%F_%H-%M-%S).log
 
 # 2) RL：训练 + 日志
 export WANDB_PROJECT=MiniOneRec
 export WANDB_MODE=offline
 set -o pipefail
-bash rl.sh | tee logs/rl_$(date +%F_%H-%M-%S).log
+bash scripts/rl.sh | tee logs/rl_$(date +%F_%H-%M-%S).log
 
 
 # 2.1) 训练指标可视化（loss / grad_norm / learning_rate）
 # 传训练输出目录或具体 trainer_state.json，默认输出到 training_analysis/
-conda run -n MiniOneRec python visualize_training_metrics.py --path output_dir/xxx
+conda run -n MiniOneRec python scripts/visualize_training_metrics.py --path output_dir/xxx
 
 
 
-# 3) Evaluate：会自动调用 visualize_metrics.py 生成图
+# 3) Evaluate：会自动调用 scripts/visualize_metrics.py 生成图
 set -o pipefail
 # 可按显存调整（默认：batch=2, beams=20, max_new_tokens=128）
 # export EVAL_BATCH_SIZE=1
 # export EVAL_NUM_BEAMS=10
 # export EVAL_MAX_NEW_TOKENS=64
-bash evaluate.sh | tee logs/eval_$(date +%F_%H-%M-%S).log
+bash scripts/evaluate.sh | tee logs/eval_$(date +%F_%H-%M-%S).log
 # 会实时打印 `Evaluation process started...`、`[Evaluate] ...` 和 `[Evaluate Progress] ...` 进度行
 
 

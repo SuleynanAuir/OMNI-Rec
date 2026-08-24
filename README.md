@@ -198,16 +198,16 @@ RL 不是替代 SFT，而是在 SFT 基础上的“受约束优化（Constrained
 
 - **2026-04-26** — 提升训练/评估的可观测性与稳定性：
   - SFT 进度日志改为每 100 步输出一次（不再逐步打印）。
-  - 新增 `visualize_training_metrics.py`，可从 `trainer_state.json` 绘制 `loss`、`grad_norm`、`learning_rate` 训练曲线。
+  - 新增 `scripts/visualize_training_metrics.py`，可从 `trainer_state.json` 绘制 `loss`、`grad_norm`、`learning_rate` 训练曲线。
   - RL 日志新增诊断指标：`loss_raw`、`loss_abs`、`policy_loss`、`kl_loss` 以及 advantage 统计量。
   - 评估阶段增加实时进度打印，并支持自适应 OOM 重试（自动缩减 batch size / beam size）。
-  - `evaluate.sh` 现在默认使用显式的 `MiniOneRec` 环境 Python，避免环境不匹配问题。
+  - `scripts/evaluate.sh` 现在默认使用显式的 `MiniOneRec` 环境 Python，避免环境不匹配问题。
 
-- **2026-01-04** — 若基于 Instruct 模型的复现结果与论文指标存在差异，请检查评估日志中 CC 指标是否非零（参见 `calc.py`）。若非零，说明模型仍在生成大量无效物品，约束解码未能正常生效。该问题可能与 transformer 等依赖版本有关，正在排查中；临时方案是将 Instruct 模型替换为 base 模型（如 Qwen2.5-base）。
+- **2026-01-04** — 若基于 Instruct 模型的复现结果与论文指标存在差异，请检查评估日志中 CC 指标是否非零（参见 `scripts/calc.py`）。若非零，说明模型仍在生成大量无效物品，约束解码未能正常生效。该问题可能与 transformer 等依赖版本有关，正在排查中；临时方案是将 Instruct 模型替换为 base 模型（如 Qwen2.5-base）。
 
 - **2025-12-04** — 新增脚本，支持处理 Amazon23 数据集。
 
-- **2025-12-01** — 修复 `data.py` 中的一个 Bug：该 Bug 可能导致 SID–物品对齐任务提前看到答案，不影响最终模型性能。
+- **2025-12-01** — 修复 `minionerec/data.py` 中的一个 Bug：该 Bug 可能导致 SID–物品对齐任务提前看到答案，不影响最终模型性能。
 
 - **2025-11-20** — 更新 **RQ-Kmeans+** 中的 SID 构建方法（首次开源复现，原方法来自 **GPR**）。
 
@@ -229,40 +229,17 @@ RL 不是替代 SFT，而是在 SFT 基础上的“受约束优化（Constrained
 
 | 文件 / 目录 | 说明 |
 | --- | --- |
-| `sft.sh` | 启动监督微调（SFT）阶段的 Shell 脚本 |
-| `sft.py` | SFT 训练循环的 Python 实现 |
-| `sft_gpr.py` | 基于 GPR 思路的 SFT，含价值感知微调（VAFT）：通过物品价值模拟实现加权损失 |
-| `rl.sh` | 启动强化学习（RL）阶段的 Shell 脚本 |
-| `rl.py` | RL 训练循环的 Python 实现 |
-| `rl_gpr.py` | 基于 GPR 思路的 RL，含层次增强策略优化（HEPO） |
-| `minionerec_trainer.py` | MiniOneRec 自定义 Trainer，基于 GRPO，专为生成式推荐设计 |
-| `configs/` | YAML 配置文件目录 |
-| `evaluate.sh` | 一键离线 Top-K 评估脚本 |
-| `evaluate.py` | 计算 HR@K 和 NDCG@K 的评估工具 |
-| `visualize_training_metrics.py` | 训练指标可视化（读取 `trainer_state.json`，绘制 `loss` / `grad_norm` / `learning_rate`） |
-| `LogitProcessor.py` | 约束解码的 Logit 处理器（Python 实现） |
-| `data.py` | SFT 和 RL 训练的数据流水线 |
-| `convert_dataset.py` | 将 RQ 训练数据集转换为 SFT-then-RL 格式 |
-| `convert_dataset_gpr.py` | GPR 风格数据集转换，注入异质 token（U/E/I/O）以模拟统一输入表示 |
-| `data/amazon18_data_process.sh` | 过滤并预处理 Amazon18 数据为 RQ 就绪格式的 Shell 脚本 |
-| `data/amazon18_data_process.py` | Amazon18 数据预处理流水线的 Python 实现 |
-| `data/amazon18_data_process_gpr.py` | GPR 风格 Amazon18 预处理，提取异质特征用于统一输入表示 |
-| `data/amazon23_data_process.sh` | 过滤并预处理 Amazon23 数据为 RQ 就绪格式的 Shell 脚本 |
-| `data/amazon23_data_process.py` | Amazon23 数据预处理流水线的 Python 实现 |
-| `rq/text2emb/amazon_text2emb.sh` | 通过 emb_model 为 Amazon 数据集生成物品（标题+描述）嵌入的 Shell 脚本 |
-| `rq/text2emb/amazon_text2emb.py` | 上述嵌入生成的 Python 实现 |
-| `rq/text2emb/amazon_text2emb_gpr.py` | GPR 风格 text-to-embedding |
-| `rq/generate_indices.py` | 训练 RQ-VAE 模型后生成 SID 文件 |
-| `rq/rqvae.sh` | 在 Amazon 物品嵌入上训练 RQ-VAE 的 Shell 脚本 |
-| `rq/rqvae.py` | RQ-VAE 训练的 Python 实现 |
-| `rq/rqkmeans_faiss.py` | 基于 faiss 的 RQ-Kmeans 训练 Python 实现 |
-| `rq/rqkmeans_constrained.py` | Constrained RQ-Kmeans 的 Python 实现 |
-| `rq/rqkmeans_constrained.sh` | 在 Amazon 物品嵌入上训练 Constrained RQ-Kmeans 的 Shell 脚本 |
-| `rq/rqkmeans_plus.py` | RQ-Kmeans+ 的 Python 实现 |
-| `rq/rqkmeans_plus.sh` | 在 Amazon 物品嵌入上训练 RQ-Kmeans+ 的 Shell 脚本 |
-| `rq/generate_indices_plus.py` | 训练 RQ-Kmeans+ 模型后生成 SID 文件 |
-| `rq/generate_indices_plus.sh` | 生成 RQ-Kmeans+ SID 文件的 Shell 脚本 |
-| `requirements.txt` | Python 依赖列表 |
+| `minionerec/` | 可复用的训练器、数据管道、约束解码和 SASRec 模块 |
+| `scripts/` | SFT、RL、评估、数据转换和可视化入口脚本 |
+| `config/` | Accelerate / DeepSpeed 等运行配置 |
+| `data/` | 示例数据及 Amazon 数据预处理脚本 |
+| `rq/` | RQ-VAE、RQ-Kmeans 和文本嵌入流程 |
+| `tests/` | 单元与回归测试 |
+| `checkpoints/` | 随仓库提供的模型权重及配套配置 |
+| `qwen/` | 本地基础模型、tokenizer 与配置文件 |
+| `docs/` | 报告及补充材料 |
+| `archive/` | 保留的旧命令记录与历史实现 |
+| `requirements.txt` / `requirements.macos.txt` | Python 依赖列表 |
 
 ---
 
@@ -289,13 +266,13 @@ pip install -r requirements.txt
 在 SID → 目标物品预测任务上进行监督微调训练。
 
 ```bash
-bash sft.sh
+bash scripts/sft.sh
 ```
 
 **日志行为：**
 - SFT 进度回调每 `100` 步（及最后一步）打印一次，减少冗余日志。
 
-**核心参数（在 `sft.sh` 中配置）：**
+**核心参数（在 `scripts/sft.sh` 中配置）：**
 
 | 参数 | 说明 |
 | --- | --- |
@@ -309,21 +286,21 @@ bash sft.sh
 | `item_meta_path` | 物品元数据 JSON（如 `./data/Amazon/index/Industrial_and_Scientific.item.json`） |
 | `freeze_LLM` | 是否冻结 LLM 参数、仅训练 Embedding（默认 False） |
 
-**自定义方式：** 编辑 `sft.sh`，更新路径、模型名和超参数。
+**自定义方式：** 编辑 `scripts/sft.sh`，更新路径、模型名和超参数。
 
 ### 步骤 4：面向推荐的强化学习（RL）
 
 基于 GRPO（群体相对策略优化）对 SFT 模型进一步精调。
 
 ```bash
-bash rl.sh
+bash scripts/rl.sh
 ```
 
 **日志行为：**
 - RL 日志包含诊断字段：`loss_raw`、`loss_abs`、`policy_loss`、`kl_loss`、`adv_mean`、`adv_abs_mean`、`adv_std`。
 - GRPO 中 `loss` 可能显示为 `0.0`（格式精度问题），但 `loss_raw` 非零，属正常现象。
 
-**核心参数（在 `rl.sh` 中配置）：**
+**核心参数（在 `scripts/rl.sh` 中配置）：**
 
 | 参数 | 说明 |
 | --- | --- |
@@ -336,21 +313,21 @@ bash rl.sh
 | `reward_type` | 奖励信号类型（如 `ranking` 表示排名感知奖励） |
 | `learning_rate` | RL 学习率（如 1e-5） |
 | `beta` | KL 惩罚系数（如 1e-3） |
-| `beam_search` | 是否使用约束束搜索（可在 `rl.sh` 中配置） |
+| `beam_search` | 是否使用约束束搜索（可在 `scripts/rl.sh` 中配置） |
 | `output_dir` | RL 检查点保存路径 |
 
-**自定义方式：** 编辑 `rl.sh`，更新检查点路径和超参数。
+**自定义方式：** 编辑 `scripts/rl.sh`，更新检查点路径和超参数。
 
 ### 步骤 5：离线评估
 
 ```bash
-bash evaluate.sh
+bash scripts/evaluate.sh
 ```
 
 **推荐运行方式（带日志保存）：**
 ```bash
 set -o pipefail
-bash evaluate.sh | tee logs/eval_$(date +%F_%H-%M-%S).log
+bash scripts/evaluate.sh | tee logs/eval_$(date +%F_%H-%M-%S).log
 ```
 
 **评估流程：**
@@ -360,7 +337,7 @@ bash evaluate.sh | tee logs/eval_$(date +%F_%H-%M-%S).log
 4. **指标计算**：计算 HR@K 和 NDCG@K
 5. **深度分析**：计算多维推荐指标并生成可发表质量的可视化图表
 
-**核心参数（在 `evaluate.sh` 中配置）：**
+**核心参数（在 `scripts/evaluate.sh` 中配置）：**
 
 | 参数 | 说明 |
 | --- | --- |
@@ -374,7 +351,7 @@ bash evaluate.sh | tee logs/eval_$(date +%F_%H-%M-%S).log
 | `cudalist` | 使用的 GPU ID（默认 0–7） |
 
 **运行时特性：**
-- 实时进度日志：`evaluate.sh` 打印进程启动，`evaluate.py` 打印阶段和批次进度
+- 实时进度日志：`scripts/evaluate.sh` 打印进程启动，`scripts/evaluate.py` 打印阶段和批次进度
 - 自适应 OOM 重试：CUDA OOM 时自动依次缩减 batch size、beam size 并重试
 - 环境稳定性：默认使用 `MiniOneRec` 环境的显式 Python（`ENV_PYTHON`）
 
@@ -495,7 +472,7 @@ bash rq/generate_indices_plus.sh
 
 **3.3 转换数据集格式**
 ```bash
-python convert_dataset.py \
+python scripts/convert_dataset.py \
      --dataset_name Industrial_and_Scientific \
      --data_dir /path/to/Industrial_and_Scientific \
      --output_dir /path/to/output_dir
@@ -504,7 +481,7 @@ python convert_dataset.py \
 ### 4. 监督微调（SFT）
 
 ```bash
-bash sft.sh \
+bash scripts/sft.sh \
      --base_model your_model_path \
      --output_dir your_output_dir \
      --sid_index_path your_.index.json_path \
@@ -516,7 +493,7 @@ bash sft.sh \
 > （可选）对于生产级大规模数据集，综合考虑强化学习成本和边际收益递减，可仅使用数万量级的子集执行 RL 阶段。
 
 ```bash
-bash rl.sh \
+bash scripts/rl.sh \
      --model_path your_model_path \
      --output_dir output_dir
 ```
@@ -524,7 +501,7 @@ bash rl.sh \
 ### 6. 离线评估
 
 ```bash
-bash evaluate.sh \
+bash scripts/evaluate.sh \
      --exp_name your_model_path
 ```
 
@@ -533,7 +510,7 @@ bash evaluate.sh \
 export EVAL_BATCH_SIZE=1
 export EVAL_NUM_BEAMS=10
 export EVAL_MAX_NEW_TOKENS=96
-bash evaluate.sh
+bash scripts/evaluate.sh
 ```
 
 ### 7. 训练指标可视化
@@ -541,7 +518,7 @@ bash evaluate.sh
 从训练目录或指定的 `trainer_state.json` 生成本地训练曲线（`loss`、`grad_norm`、`learning_rate`）：
 
 ```bash
-python visualize_training_metrics.py --path output_dir/xxx
+python scripts/visualize_training_metrics.py --path output_dir/xxx
 ```
 
 输出文件：
@@ -559,7 +536,7 @@ python visualize_training_metrics.py --path output_dir/xxx
 - 来自约束解码——束搜索偏离了有效前缀路径。当前代码已包含警告限速和回退行为。
 
 **评估时出现 `ModuleNotFoundError: transformers`**
-- 确保使用 `MiniOneRec` 环境。`evaluate.sh` 现在通过 `ENV_PYTHON` 解析 Python（默认指向 `.../envs/MiniOneRec/bin/python`）。
+- 确保使用 `MiniOneRec` 环境。`scripts/evaluate.sh` 现在通过 `ENV_PYTHON` 解析 Python（默认指向 `.../envs/MiniOneRec/bin/python`）。
 
 **评估时 CUDA OOM**
 - 降低 `EVAL_BATCH_SIZE`、`EVAL_NUM_BEAMS` 和/或 `EVAL_MAX_NEW_TOKENS`。
@@ -724,7 +701,7 @@ SFT 阶段同时引入多个辅助任务，使模型在语言空间与 SID 空�
 
 **价值感知微调（VAFT，来自 GPR）：**
 
-`sft_gpr.py` 实现了加权损失——根据模拟的物品价值对不同样本赋予差异化权重，使模型更关注高价值推荐。
+`scripts/sft_gpr.py` 实现了加权损失——根据模拟的物品价值对不同样本赋予差异化权重，使模型更关注高价值推荐。
 
 ### 3.2 强化学习（RL）—— GRPO
 
@@ -756,7 +733,7 @@ R(item) = λ · R_correctness + (1-λ) · R_rank
 
 #### 层次增强策略优化（HEPO，来自 GPR）
 
-`rl_gpr.py` 实现了 HEPO：在 SID 的不同层级（码字位）施加差异化的策略梯度权重，使模型对高层语义码字（更具辨别力的位）给予更多关注。
+`scripts/rl_gpr.py` 实现了 HEPO：在 SID 的不同层级（码字位）施加差异化的策略梯度权重，使模型对高层语义码字（更具辨别力的位）给予更多关注。
 
 ---
 
@@ -784,7 +761,7 @@ LLM 在自由生成模式下可能产生不存在于物品库中的 SID token �
 ......
 ```
 
-`LogitProcessor.py` 实现了上述逻辑，在 beam search 的每一步屏蔽非法 token 的 logit。
+`minionerec/logit_processor.py` 实现了上述逻辑，在 beam search 的每一步屏蔽非法 token 的 logit。
 
 ### 4.3 约束束搜索（Constrained Beam Search）
 

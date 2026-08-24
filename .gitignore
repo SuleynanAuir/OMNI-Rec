@@ -1,0 +1,58 @@
+# Operating-system metadata
+.DS_Store
+Thumbs.db
+
+# Python bytecode and tool caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Virtual environments and local environment variables
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+
+# Editors and notebooks
+.idea/
+.vscode/
+*.swp
+*.swo
+.ipynb_checkpoints/
+
+# Training, evaluation, and experiment outputs
+logs/
+*.log
+output_dir/
+results/
+temp/
+wandb/
+runs/
+
+# Local model/download caches
+.cache/
+**/.cache/
+
+# Large generated model artifacts. Repository-provided fixtures remain versioned.
+*.safetensors
+*.bin
+*.ckpt
+*.pt
+*.pth
+!qwen/model.safetensors
+!checkpoints/model.safetensors
+
+# Generated local dataset workspaces
+data/Amazon18/
+data/Amazon23/

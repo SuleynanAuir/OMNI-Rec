@@ -24,7 +24,7 @@ try:
 except ImportError:
     bnb = None
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from data import D3Dataset, SFTData, SidSFTDataset, SidItemFeatDataset, FusionSeqRecDataset, PreferenceSFTDataset, UserPreference2sidSFTDataset, TitleHistory2SidSFTDataset
+from minionerec.data import D3Dataset, SFTData, SidSFTDataset, SidItemFeatDataset, FusionSeqRecDataset, PreferenceSFTDataset, UserPreference2sidSFTDataset, TitleHistory2SidSFTDataset
 import random
 from datasets import Dataset as HFDataset
 from torch.utils.data import ConcatDataset
@@ -149,6 +149,7 @@ def train(
     train_from_scratch: bool = False,
     sid_index_path: str = "",
     item_meta_path: str = "",
+    gradient_checkpointing: bool = True,
 ):
     print("[SFT] initializing training function", flush=True)
     set_seed(seed)
@@ -175,6 +176,7 @@ def train(
         model = AutoModelForCausalLM.from_pretrained(
             base_model,
             torch_dtype=torch.bfloat16,
+            low_cpu_mem_usage=True,
         )
         print("[SFT] model loaded", flush=True)
     else:
@@ -188,6 +190,7 @@ def train(
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.pad_token_id = tokenizer.eos_token_id
     tokenizer.padding_side = "left"
+    original_vocab_size = model.get_input_embeddings().weight.shape[0]
     
     if sid_index_path and os.path.exists(sid_index_path):
         print(f"Loading index from {sid_index_path}")
@@ -200,6 +203,10 @@ def train(
             print(f"Adding {len(new_tokens)} new tokens to tokenizer")
             tokenizer.add_tokens(new_tokens)
             model.resize_token_embeddings(len(tokenizer))
+
+    if gradient_checkpointing:
+        model.gradient_checkpointing_enable()
+        model.config.use_cache = False
 
     # Freeze LLM parameters if required
     if freeze_LLM:

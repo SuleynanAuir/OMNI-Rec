@@ -399,7 +399,7 @@ class TestTestGenerationConfigHasNoTopKTopP(unittest.TestCase):
     def test_trainer_source_sets_top_k_and_top_p_none(self):
         """Regression test for issue #66: test_generation_config must set top_k=None, top_p=None."""
         import ast, os
-        src = os.path.join(os.path.dirname(__file__), '..', 'minionerec_trainer.py')
+        src = os.path.join(os.path.dirname(__file__), '..', 'minionerec', 'trainer.py')
         with open(src) as f:
             source = f.read()
         tree = ast.parse(source)
@@ -417,7 +417,7 @@ class TestTestGenerationConfigHasNoTopKTopP(unittest.TestCase):
                             self.assertIsInstance(kw_map['top_p'], ast.Constant)
                             self.assertIsNone(kw_map['top_p'].value, "top_p must be None")
                             return
-        self.fail("Could not find test_generation_config assignment in minionerec_trainer.py")
+        self.fail("Could not find test_generation_config assignment in minionerec/trainer.py")
 
 
 if __name__ == '__main__':

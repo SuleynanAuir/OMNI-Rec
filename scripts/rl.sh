@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+REPO_ROOT=$(cd -- "${SCRIPT_DIR}/.." && pwd)
+cd "${REPO_ROOT}"
+export PYTHONPATH="${REPO_ROOT}${PYTHONPATH:+:${PYTHONPATH}}"
+
 export NCCL_IB_DISABLE=1        # 完全禁用 IB/RoCE
 export PYTHONUNBUFFERED=1
 export TOKENIZERS_PARALLELISM=false
@@ -47,7 +52,7 @@ for category in "Industrial_and_Scientific"; do
     conda run --no-capture-output -n MiniOneRec bash -lc "export HF_ENDPOINT=https://hf-mirror.com; export PYTHONUNBUFFERED=1; accelerate launch \
                                     --config_file ./config/zero2_opt.yaml \
                                     --num_processes ${NUM_PROCESSES} --main_process_port 29503 \
-                                    rl.py \
+                                    scripts/rl.py \
                         --model_path ${MODEL_PATH} \
                         --train_batch_size 64 \
                         --eval_batch_size 128 \

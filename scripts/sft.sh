@@ -1,3 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+REPO_ROOT=$(cd -- "${SCRIPT_DIR}/.." && pwd)
+cd "${REPO_ROOT}"
+export PYTHONPATH="${REPO_ROOT}${PYTHONPATH:+:${PYTHONPATH}}"
+
 export NCCL_IB_DISABLE=1        # 完全禁用 IB/RoCE
 NPROC_PER_NODE=${NPROC_PER_NODE:-1}
 BASE_MODEL=${BASE_MODEL:-./qwen}
@@ -37,7 +46,7 @@ for category in "Industrial_and_Scientific"; do
     echo "[SFT] start category=${category}, model=${BASE_MODEL}, nproc=${NPROC_PER_NODE}, batch=${BATCH_SIZE}, micro=${MICRO_BATCH_SIZE}, epochs=${NUM_EPOCHS}, cutoff=${CUTOFF_LEN}, sample=${SAMPLE}"
 
     SFT_ARGS=(
-        sft.py
+        scripts/sft.py
         --base_model "${BASE_MODEL}"
         --batch_size "${BATCH_SIZE}"
         --micro_batch_size "${MICRO_BATCH_SIZE}"

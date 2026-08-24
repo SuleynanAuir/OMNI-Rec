@@ -6,8 +6,8 @@ import json
 import os
 import gc
 from transformers import GenerationConfig,  AutoTokenizer, BitsAndBytesConfig, AutoModelForCausalLM, LogitsProcessorList, TemperatureLogitsWarper
-from data import  EvalD3Dataset, EvalSidDataset
-from LogitProcessor import ConstrainedLogitsProcessor
+from minionerec.data import EvalD3Dataset, EvalSidDataset
+from minionerec.logit_processor import ConstrainedLogitsProcessor
 from accelerate import Accelerator
 import random
 try:
@@ -297,7 +297,6 @@ def main(
 
 if __name__ == '__main__':
     fire.Fire(main)
-
 
 
 

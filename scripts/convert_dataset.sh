@@ -1,7 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
+set -euo pipefail
 
-PYTHON_SCRIPT="convert_dataset.py"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+REPO_ROOT=$(cd -- "${SCRIPT_DIR}/.." && pwd)
+cd "${REPO_ROOT}"
+export PYTHONPATH="${REPO_ROOT}${PYTHONPATH:+:${PYTHONPATH}}"
+
+PYTHON_SCRIPT="scripts/convert_dataset.py"
 
 INPUT_DIR="data/Amazon18/Industrial_and_Scientific"
 

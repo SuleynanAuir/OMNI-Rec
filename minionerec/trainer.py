@@ -61,7 +61,7 @@ from transformers import (
         Trainer
     )
 
-from LogitProcessor import ConstrainedLogitsProcessor
+from .logit_processor import ConstrainedLogitsProcessor
 from transformers.generation import LogitsProcessor
 import math
 
